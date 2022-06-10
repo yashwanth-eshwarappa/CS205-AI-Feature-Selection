@@ -97,6 +97,102 @@ function forwardSelection(dataList) {
     return returnString;
 }
 
+function backwardElimination(dataList) {
+    var returnString = "<h2><u>Backward Elimination</u></h2>";
+    var maxAccuracy = Number.MIN_VALUE;
+    var finalBestAttributes = [];
+    var numOfFeature = dataList[0].length;
+    var featuresVisited = [];
+
+    var selectedFeatures = [];
+    for (var i = 1; i < numOfFeature; i++) {
+        selectedFeatures.push(i);
+    }
+    for (var j = 0; j < numOfFeature; j++) {
+        var bestAccurancyThisTurn = 0;
+        var bestAttributeToAdd = 0;
+        for (var i = 1; i < numOfFeature; ++i) {
+            var localSelectedFeatures = [];
+            localSelectedFeatures = [...selectedFeatures];
+            if (featuresVisited[i]) {
+                continue;
+            }
+            if (j != 0) {
+                localSelectedFeatures = removeElementFromList(localSelectedFeatures, i);
+            }
+
+            var correctlyPredictedTypeCount = 0;
+            for (var eachdata = 0; eachdata < dataList.length; eachdata++) {
+                if (calculateAccuracy(eachdata, dataList, localSelectedFeatures)) {
+                    correctlyPredictedTypeCount++;
+                }
+            }
+            var result = (correctlyPredictedTypeCount) / dataList.length;
+
+
+
+            // var result = testAccurancy(localSelectedFeatures);
+            var temp = maxAccuracy;
+            maxAccuracy = Math.max(result, maxAccuracy);
+
+            if (temp < maxAccuracy) {
+                // finalBestAttributes.clear();
+                finalBestAttributes = localSelectedFeatures;
+            }
+
+
+            returnString += "For the features " + (localSelectedFeatures) + " the accuracy is " + result + "<br>";
+            // console.log("-->with features " + (localSelectedFeatures) + " the accuracy is " + result);
+            if (result > bestAccurancyThisTurn) {
+                bestAccurancyThisTurn = result;
+                bestAttributeToAdd = i;
+            }
+            if (j == 0) {
+                break;
+            }
+        }
+
+        if (j != 0) {
+            selectedFeatures = removeElementFromList(selectedFeatures, bestAttributeToAdd);
+            featuresVisited[bestAttributeToAdd] = true;
+        }
+
+        // console.log("After" + selectedFeatures)
+
+        returnString += "<b>Selecting best features " + (selectedFeatures) + " was best, accuracy is " + bestAccurancyThisTurn + "</b><br>";
+        console.log("Selecting best features " + (selectedFeatures) + " was best, accuracy is " + bestAccurancyThisTurn + "\n");
+    }
+    // return selectedFeatures;
+    returnString += "<h3><b>Final best feature for backward elimination is " + (finalBestAttributes) + " and the accuracy is " + maxAccuracy + "</b><h3><br>";
+    console.log("Final best feature for backward elimination is " + (finalBestAttributes) + " and the accuracy is " + maxAccuracy + "\n");
+    return returnString;
+}
+
+function calculateAccuracy(index, dataList, localSelectedFeatures) {
+
+    var testerPoint = dataList[index];
+    var minDistanceSquared = Number.MAX_VALUE;
+    var predictedType = 0;
+    for (var i = 0; i < dataList.length; i++) {
+        if (i == index) {
+            continue;
+        }
+
+        var curDistanceSquared = 0;
+        var candidatePoint = dataList[i];
+
+        for (var j of localSelectedFeatures) {
+            //				Integer j =  sampleData.get(l).get(0).intValue();
+            curDistanceSquared += (candidatePoint[j] - testerPoint[j]) * (candidatePoint[j] - testerPoint[j]);
+        }
+        if (curDistanceSquared < minDistanceSquared) {
+            minDistanceSquared = curDistanceSquared;
+            predictedType = Number.parseInt(candidatePoint[0]);
+        }
+    }
+    return Number.parseInt(testerPoint[0]) == predictedType;
+}
+
 function calculateAccuracy(index, dataList, localSelectedFeatures) {
 
     var testerPoint = dataList[index];
@@ -122,3 +218,11 @@ function calculateAccuracy(index, dataList, localSelectedFeatures) {
 }
 
 
+function removeElementFromList(arr, value) {
+
+    // console.log("Before" + arr)
+    return arr.filter(function (geeks) {
+        return geeks != value;
+    });
+
+}
