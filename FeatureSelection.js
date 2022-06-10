@@ -129,8 +129,6 @@ function backwardElimination(dataList) {
             }
             var result = (correctlyPredictedTypeCount) / dataList.length;
 
-
-
             // var result = testAccurancy(localSelectedFeatures);
             var temp = maxAccuracy;
             maxAccuracy = Math.max(result, maxAccuracy);
@@ -156,9 +154,6 @@ function backwardElimination(dataList) {
             selectedFeatures = removeElementFromList(selectedFeatures, bestAttributeToAdd);
             featuresVisited[bestAttributeToAdd] = true;
         }
-
-        // console.log("After" + selectedFeatures)
-
         returnString += "<b>Selecting best features " + (selectedFeatures) + " was best, accuracy is " + bestAccurancyThisTurn + "</b><br>";
         console.log("Selecting best features " + (selectedFeatures) + " was best, accuracy is " + bestAccurancyThisTurn + "\n");
     }
@@ -182,7 +177,6 @@ function calculateAccuracy(index, dataList, localSelectedFeatures) {
         var candidatePoint = dataList[i];
 
         for (var j of localSelectedFeatures) {
-            //				Integer j =  sampleData.get(l).get(0).intValue();
             curDistanceSquared += (candidatePoint[j] - testerPoint[j]) * (candidatePoint[j] - testerPoint[j]);
         }
         if (curDistanceSquared < minDistanceSquared) {
@@ -219,10 +213,24 @@ function calculateAccuracy(index, dataList, localSelectedFeatures) {
 
 
 function removeElementFromList(arr, value) {
-
-    // console.log("Before" + arr)
-    return arr.filter(function (geeks) {
-        return geeks != value;
+    return arr.filter(function (temp) {
+        return temp != value;
     });
-
 }
+
+
+readData().then(() => {
+    var strFS = forwardSelection(dataList);
+    var strBE = backwardElimination(dataList);
+    // console.log("strBE:" + strBE);
+
+    var http = require('http');
+    http.createServer(function (req, res) {
+
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        res.write("<h1 style='text-align:center'><u>CS205 AI: Feature Selection</u></h1>");
+        res.write(strFS);
+        res.write(strBE);
+        res.end();
+    }).listen(8080);
+});
