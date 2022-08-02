@@ -3,6 +3,8 @@
 
 # Introduction:
 
+This project is for the Introduction to AI course, part of the project assigned by professor Dr. Eamonn Keogh during the Spring 2022 quarter at University of California Riverside.
+
 In this project, nearest neighbor classifier is implemented through two different types of
 searches - forward selection and backward elimination. The best feature/features are selected
 based on accuracy rates after searching for the dataset provided.
